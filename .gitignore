@@ -1,0 +1,17 @@
+# Ansible
+*.retry
+*.swp
+.ansible-lint
+
+# Sensitive data
+vault_password
+*.vault
+secrets/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+*.tmp

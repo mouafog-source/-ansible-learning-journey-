@@ -1,0 +1,49 @@
+- name: Configure Web Server with Nginx
+  hosts: local
+  become: yes
+  vars:
+    web_root: /var/www/html
+    site_name: "My Ansible Site"
+    
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start and enable Nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create custom index.html
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>{{ site_name }}</title>
+          </head>
+          <body>
+              <h1>🚀 Success! Ansible configured this server</h1>
+              <p>Deployed on {{ ansible_date_time.iso8601 }}</p>
+              <p>Host: {{ ansible_hostname }}</p>
+          </body>
+          </html>
+        dest: "{{ web_root }}/index.html"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+      notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
